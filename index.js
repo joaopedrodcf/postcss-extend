@@ -3,8 +3,11 @@
 var postcss = require('postcss');
 // /*DEBUG*/var appendout = require('fs').appendFileSync;
 
-module.exports = postcss.plugin('postcss-extend', function extend() {
-
+module.exports = postcss.plugin('postcss-extend', function extend(opts) {
+  opts = opts || {};
+  
+  const keepPlaceholders = opts.keepPlaceholders;
+  
   return function(css, result) {
     var definingAtRules = ['define-placeholder', 'define-extend', 'extend-define'];
     var extendingAtRules = ['extend'];
@@ -33,7 +36,7 @@ module.exports = postcss.plugin('postcss-extend', function extend() {
           } else {
             selectorAccumulator.push(tgtSaved[i]);
           }
-        } else if (tgtSaved.length === 1) {
+        } else if (!keepPlaceholders && tgtSaved.length === 1) {
           targetNode.remove();
         // /*DEBUG*/} else {
           // /*DEBUG*/appendout('./test/debugout.txt', '\nSifted out placeholder/silent ' + tgtSaved[i]);
